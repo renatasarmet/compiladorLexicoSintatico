@@ -5,7 +5,7 @@ Alunos:
   Bianca Garcia Martins 606723
   
 
-Implementar todas as convenções léxicas da linguagem Lua, apenas o subconjunto descrito a seguir.
+Implementar os seguintes subconjuntos de convenções léxicas:
 a) Palavras reservadas (todas)
 b) Símbolos reservados (todos)
 c) Nomes
