@@ -5,12 +5,13 @@
 
 grammar Lua;
 
+@members (
     public static String grupo="<<606723, , >>";
+)*
 
 /*PALAVRAS RESERVADAS*/
 
 PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
-                 'for' | 'function' | ‘if’ | 'in' | 'local' | 'nil' | 'not' | 'or' |
                  'for' | 'function' | 'if' | 'in' | 'local' | 'nil' | 'not' | 'or' |
                  'repeat' | 'return' | 'then' | 'true' | 'until' | 'while';
 
@@ -33,12 +34,10 @@ OpRel: '<' | '>' |  '<=' | '>=' | '~=' | '==';
 OpConcat: '..'; // CONCATENAÇÃO
 OpArit1: '+' | '-';
 OpArit2: '*'| '/' | '%';
-OpLogico3: 'not' | '#' | '-' // '-' UNÁRIO
 OpLogico3: 'not' | '#' | '-' ;// '-' UNÁRIO
 OpArit3: '^'; //EXPONENCIAÇÃO
 
 OpAtrib: '='; //ATRIBUIÇÃO
-OpDelim: '(' | ')' | '{' | '}' | '[' | ']'; //DELIMITADORES
 OpDelim: '(' | ')' | '(' | ')*' | '(' | ')?'; //DELIMITADORES
 OpOutros: ';' | ':' | ',' | '.' | '...';
 
@@ -51,7 +50,6 @@ fragment LetraMaiuscula : ('A'..'Z');
 Letra: ('a'..'z') | ('A'..'Z');
 fragment Digito : '0'..'9';
 
-Nome:(Letra|'_')(Letra|'_'|Digito)*
 Nome:(Letra|'_')(Letra|'_'|Digito)* ;
 
 
