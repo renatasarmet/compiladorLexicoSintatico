@@ -5,9 +5,9 @@
 
 grammar Lua;
 
-@members (
+@members {
     public static String grupo="<<606723, , >>";
-)*
+}
 
 /*PALAVRAS RESERVADAS*/
 
