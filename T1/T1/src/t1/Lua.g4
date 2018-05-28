@@ -94,8 +94,14 @@ programa : trecho;
 
 trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
-comando : 'function' nomedafuncao corpodafuncao |
-           'if'  exp 'then' trecho ('elseif' exp 'then' trecho)* ('else' trecho)? 'end';
+comando : listavar '=' listaexp |
+          chamadadefuncao |
+          'function' nomedafuncao corpodafuncao |
+          'if'  exp 'then' trecho ('elseif' exp 'then' trecho)* ('else' trecho)? 'end' |
+          'repeat' trecho 'until' exp |
+          'for' nome '=' exp ',' exp (',' exp)* 'do' trecho 'end' |
+          'for' listadenomes 'in' listaexp 'do' trecho 'end'
+           ;
 
 ultimocomando: 'return' (listaexp)? | 'break';
 
@@ -105,7 +111,7 @@ corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
 listaexp : (exp ',')* exp;
 
-exp :  ConstanteNumerica | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
+exp : CadeiaCaracteres | ConstanteNumerica  | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
 
 listapar : listadenomes (',' '...')? | '...';
 
@@ -113,12 +119,15 @@ nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
 listadenomes : nome (',' nome)*;
 
-expprefixo: var | '(' expprefixo ')' | chamadadefuncao;
+expprefixo: var | expprefixo1;
+expprefixo1 :  '(' exp ')' | chamadadefuncao;
+
+var : nome | (expprefixo1|nome) ('.' var)?;
 
 chamadadefuncao :  nome '(' listaexp ')' ;
 
-var : nome ;
 
+listavar : var ( ',' var) *;
 
 /*
 //definição de um programa
