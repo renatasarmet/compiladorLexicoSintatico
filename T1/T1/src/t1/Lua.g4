@@ -109,9 +109,9 @@ nomedafuncao : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.FUNCAO);
 
 corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
-listaexp : (exp ',')* exp;
+listaexp : exp (',' exp)* ;
 
-exp : CadeiaCaracteres | ConstanteNumerica  | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
+    exp : CadeiaCaracteres | ConstanteNumerica  | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
 
 listapar : listadenomes (',' '...')? | '...';
 
