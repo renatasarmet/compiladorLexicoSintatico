@@ -9,13 +9,14 @@ grammar Lua;
     public static String grupo= "<606723, 726556 , 726586 >";
 }
 
-/*PALAVRAS RESERVADAS*/
 
+/*PALAVRAS RESERVADAS*/
+/*
 PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
                  'for' | 'function' | 'if' | 'in' | 'local' | 'nil' | 'not' | 'or' |
                  'repeat' | 'return' | 'then' | 'true' | 'until' | 'while';
 
-
+*/
 
 /*
     SIMBOLOS RESERVADOS:
@@ -26,8 +27,8 @@ PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
     Todos os demais operadores binários são associativos à esquerda.
 
 */
-
 /*Operadores de acordo com a precedência*/
+/*
 OpLogico1: 'or';
 OpLogico2: 'and';
 OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
@@ -45,14 +46,14 @@ ParenD : ')';
 OpDelim: ParenE | ParenD | '(' | ')*' | '(' | ')?'; //DELIMITADORES
 OpOutros: ';' | ':' | ',' | '.' | '...';
 
-
+*/
 
 /*NOMES*/
 
 fragment LetraMinuscula : ('a'..'z');
 fragment LetraMaiuscula : ('A'..'Z');
-Letra: LetraMaiuscula | LetraMinuscula;
-fragment Digito : '0'..'9';
+fragment Letra: LetraMinuscula | LetraMaiuscula;
+fragment Digito : ('0'..'9');
 
 Nome: (Letra|'_')(Letra|'_'|Digito)* ;
 
@@ -69,7 +70,7 @@ CadeiaCaracteres: ('\'' | '"')(~('\'' | '"'))*('\'' | '"');
     Apenas decimais, sem sinal, com dígitos antes e depois do ponto decimal opcionais
 */
 
-ConstanteNumerica: Digito+ '.'? Digito+ ;
+ConstanteNumerica: Digito+ ('.' Digito+)?;
 
 
 //Ignora comentarios, comentarios na mesma linha

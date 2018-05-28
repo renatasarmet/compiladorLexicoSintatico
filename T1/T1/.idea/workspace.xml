@@ -22,8 +22,8 @@
       <file leaf-file-name="Lua.g4" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/t1/Lua.g4">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="93" column="29" selection-start-line="93" selection-start-column="29" selection-end-line="93" selection-end-column="29" />
+            <state relative-caret-position="165">
+              <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
               <folding>
                 <element signature="e#114#188#1" expanded="true" />
               </folding>
@@ -34,8 +34,8 @@
       <file leaf-file-name="lua1.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/t1/exemplos/lua1.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+            <state relative-caret-position="105">
+              <caret line="7" column="4" lean-forward="true" selection-end-line="10" />
             </state>
           </provider>
         </entry>
@@ -208,12 +208,12 @@
       <workItem from="1526267049026" duration="44000" />
       <workItem from="1526267420688" duration="1237000" />
       <workItem from="1527512474951" duration="7414000" />
-      <workItem from="1527530632197" duration="92000" />
+      <workItem from="1527530632197" duration="1466000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9682000" />
+    <option name="totallyTimeSpent" value="11056000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -356,15 +356,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/t1/exemplos/lua1.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+        <state relative-caret-position="105">
+          <caret line="7" column="4" lean-forward="true" selection-end-line="10" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/t1/Lua.g4">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="93" column="29" selection-start-line="93" selection-start-column="29" selection-end-line="93" selection-end-column="29" />
+        <state relative-caret-position="165">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
           <folding>
             <element signature="e#114#188#1" expanded="true" />
           </folding>
