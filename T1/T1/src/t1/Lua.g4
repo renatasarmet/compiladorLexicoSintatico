@@ -6,7 +6,7 @@
 grammar Lua;
 
 @members {
-    public static String grupo="<<606723, , >>";
+    public static String grupo= "<606723, 726556 , 726586 >";
 }
 
 /*PALAVRAS RESERVADAS*/
@@ -30,7 +30,7 @@ PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
 /*Operadores de acordo com a precedência*/
 OpLogico1: 'or';
 OpLogico2: 'and';
-OpRel: '<' | '>' |  '<=' | '>=' | '~=' | '==';
+OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
 OpConcat: '..'; // CONCATENAÇÃO
 OpArit1: '+' | '-';
 OpArit2: '*'| '/' | '%';
@@ -38,7 +38,11 @@ OpLogico3: 'not' | '#' | '-' ;// '-' UNÁRIO
 OpArit3: '^'; //EXPONENCIAÇÃO
 
 OpAtrib: '='; //ATRIBUIÇÃO
-OpDelim: '(' | ')' | '(' | ')*' | '(' | ')?'; //DELIMITADORES
+
+ParenE : '(';
+ParenD : ')';
+
+OpDelim: ParenE | ParenD | '(' | ')*' | '(' | ')?'; //DELIMITADORES
 OpOutros: ';' | ':' | ',' | '.' | '...';
 
 
@@ -47,11 +51,10 @@ OpOutros: ';' | ':' | ',' | '.' | '...';
 
 fragment LetraMinuscula : ('a'..'z');
 fragment LetraMaiuscula : ('A'..'Z');
-Letra: ('a'..'z') | ('A'..'Z');
+Letra: LetraMaiuscula | LetraMinuscula;
 fragment Digito : '0'..'9';
 
-Nome:(Letra|'_')(Letra|'_'|Digito)* ;
-
+Nome: (Letra|'_')(Letra|'_'|Digito)* ;
 
 /*
     CADEIA DE CARACTERES:
@@ -69,62 +72,122 @@ CadeiaCaracteres: ('\'' | '"')(~('\'' | '"'))*('\'' | '"');
 ConstanteNumerica: Digito+ '.'? Digito+ ;
 
 
+//Ignora comentarios, comentarios na mesma linha
+Comentario: '--' ~('\n')* '\n' -> skip;
+
+// Ignora tabulações, returns e quebras de linha
+WS : [ \t\r\n]+ -> skip;
+
+
 // Análise sintática
 
-block : chunk ;
+programa : trecho;
 
-chunk : (stat (';')?)* (laststat (';')?)? ;
+trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
-stat :  varlist '=' explist |
-		 functioncall |
-		 do block end |
-		 while exp do block end |
-		 repeat block until exp |
-		 if exp then block (elseif exp then block)* (else block)? end |
-		 for Name '=' exp ',' exp (',' exp)? do block end |
-		 for namelist in explist do block end |
-		 function funcname funcbody |
-		 local function Name funcbody |
-		 local namelist ('=' explist)? ;
+comando : 'function' nomedafuncao corpodafuncao ;
 
+ultimocomando: 'return' (listaexp)? | 'break';
 
-laststat : return (explist)? | break ;
+nomedafuncao : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.FUNCAO);};
 
-funcname : Name ('.' Name)* (':' Name)? ;
+corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
-varlist : var (',' var)* ;
+listaexp : (exp ',')* exp;
 
-var :  Name | prefixexp '(' exp ')?' | prefixexp '.' Name ;
+exp : 'nil' | 'false' | 'true' | ConstanteNumerica | CadeiaCaracteres | '...';
 
-namelist : Name (',' Name)* ;
+listapar : listadenomes (',' '...')? | '...';
 
-explist : (exp ',')* exp ;
+nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
-exp :  nil | false | true | Number | String | '...' | function |
-     prefixexp | tableconstructor | exp binop exp | unop exp ;
+listadenomes : nome (',' nome)*;
 
-prefixexp : var | functioncall | '(' exp ')' ;
+/*
+//definição de um programa
+programa : trecho;
 
-functioncall :  prefixexp args | prefixexp ':' Name args ;
+//definição de trecho
+trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
-args :  '(' (explist)? ')' | tableconstructor | String ;
+//definição de bloco
+bloco : trecho;
 
-function : function funcbody ;
+//Comandos da linguagem
+comando :   listavar '=' listaexp |
+            callfuncao |
+            'do' bloco 'end' |
+            'while' exp 'do' bloco 'end' |
+            'repeat' bloco 'until' exp |
+            'if' exp 'then' bloco ('elseif' exp 'then' bloco)* ('else' bloco)? 'end' |
+            'for' var '=' exp ',' exp (',' exp)? 'do' bloco 'end' |
+            'for' listavar 'in' listaexp 'do' bloco 'end' |
+            'function' nomedafuncao corpodafuncao |
+            'local function' nomedafuncao corpodafuncao |
+            'local' listadenomes ('=' listaexp)?;
 
-funcbody : '(' (parlist)? ')' block end ;
+//comando de natureza finalizadora
+ultimocomando : 'return' (listaexp)? | 'break';
 
-parlist : namelist (',' '...')? | '...' ;
+//definição do nome da função com chamadas para adição na tabela de simbolos
+nomedafuncao : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.FUNCAO);} |
+                NomeAtributo {TabelaDeSimbolos.adicionarSimbolo($NomeAtributo.text, Tipo.FUNCAO);};
 
-tableconstructor : '(' (fieldlist)? ')*' ;
+//listas de variaveis separadas por virgula
+listavar : var (',' var)*;
 
-fieldlist : field (fieldsep field)* (fieldsep)? ;
+//definição das 3 variaveis presentes na linguagem Lua. Variáveis globais, variáveis locais e campos de tabelas
+var :   Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);}|
+        Nome ('[' exp ']')+ {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);}|
+        NomeAtributo {TabelaDeSimbolos.adicionarSimbolo($NomeAtributo.text, Tipo.VARIAVEL);};
 
-field : '(' exp ')?' '=' exp | Name '=' exp | exp ;
+// regra utilizada para salvar na tabela de simbolos
+nome: Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
-fieldsep : ',' | ';' ;
+//tipos de expressões
+expprefixo :    var |
+                callfuncao |
+                '(' exp ')';
 
-binop : '+' | '-' | '*' | '/' | '^' | '%' | '..' |
-     '<' | '<=' | '>' | '>=' | '==' | '~=' |
-     and | or ;
+//chamada de funções (com "( )" ou " : ")
+chamadadefuncao :   (args)+ |
+                    (':' args)+;
 
-unop : '-' | not | '#' ;
+//Listas de nomes, separados por virgula
+listadenomes : nome (',' nome)*;
+
+//Lista de expressões separadas por virgula
+listaexp : (exp ',')* exp;
+
+//expressões
+exp : 'nil' | 'false' | 'true' | ConstanteNumerica | CadeiaCaracteres | '...' |
+expprefixo | construtortabela | exp opbin exp | opunaria exp;
+
+// regra para chamadas de funcao e procedimentos
+callfuncao: nomedafuncao chamadadefuncao;
+//argumentos
+args : '(' (listaexp)? ')' | construtortabela | CadeiaCaracteres;
+corpodafuncao : '(' (listapar)? ')' bloco 'end';
+
+listapar : listadenomes (',' '...')? | '...';
+
+//definição de construtor tabela
+construtortabela : '{' (listadecampos)? '}';
+
+//listas de campos, com separador de campos
+listadecampos : campo (separadordecampos campo)* (separadordecampos)?;
+
+//definição de campo
+campo : '[' exp ']' '=' exp | Nome '=' exp | exp;
+
+//separação de campos
+separadordecampos : ',' | ';';
+
+//Operadores binarios reservados
+opbin : OpArit1 | OpArit2 | OpArit3 | OpConcat |
+        OpRel | OpLogico1 | OpLogico2;
+
+//Operadores unarios reservados
+opunaria : OpLogico3;
+
+*/
