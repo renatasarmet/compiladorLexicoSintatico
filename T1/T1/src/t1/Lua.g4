@@ -42,21 +42,27 @@ OpOutros: ';' | ':' | ',' | '.' | '...';
 
 /*NOMES*/
 
-//Operadores aritme
-OpArit1: '+' | '-' | '..';
-OpArit2: '*'| '/' | '%';
-OpArit3: '^'; //EXPONENCIAÇÃO
 
 
 OpAtrib: '='; //ATRIBUIÇÃO
+
+
 
 //Operadores lógicos
 OpLogico1: 'or';
 OpLogico2: 'and';
 OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
 
-OpUnaria: 'not' | '#' | '-' ;// '-' UNÁRIO
 
+//OpUnaria: '-' ; //| 'not' | '#' ;// '-' UNÁRIO
+
+Menos : '-' ;
+Mais : '+' ;
+DoisPontos : '..';
+Multiplicar : '*' ;
+Dividir : '/' ;
+Modulo : '%' ;
+Potencia : '^' ;
 
 fragment LetraMinuscula : ('a'..'z');
 fragment LetraMaiuscula : ('A'..'Z');
@@ -111,7 +117,11 @@ corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
 listaexp : exp (',' exp)* ;
 
-    exp : CadeiaCaracteres | ConstanteNumerica  | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
+exp : CadeiaCaracteres | constanteNumerica  | expprefixo | expprefixo OpRel exp | opUn exp | expprefixo opArit2 exp | expprefixo opArit1 exp  ;
+
+constanteNumerica: ConstanteNumerica ;
+
+opUn : Menos ;
 
 listapar : listadenomes (',' '...')? | '...';
 
@@ -128,6 +138,11 @@ chamadadefuncao :  nome '(' listaexp ')' ;
 
 
 listavar : var ( ',' var) *;
+
+//Operadores aritmeticos
+opArit1 : Menos | Mais | DoisPontos;
+opArit2: Multiplicar | Dividir | Modulo;
+opArit3: Potencia;
 
 /*
 //definição de um programa
