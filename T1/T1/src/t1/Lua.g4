@@ -102,11 +102,13 @@ trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
 comando : listavar '=' listaexp |
           chamadadefuncao |
+          'do' trecho 'end' |
           'function' nomedafuncao corpodafuncao |
           'if'  exp 'then' trecho ('elseif' exp 'then' trecho)* ('else' trecho)? 'end' |
           'repeat' trecho 'until' exp |
           'for' nome '=' exp ',' exp (',' exp)* 'do' trecho 'end' |
-          'for' listadenomes 'in' listaexp 'do' trecho 'end'
+          'for' listadenomes 'in' listaexp 'do' trecho 'end' |
+          'local' listadenomes ('=' listaexp)?
            ;
 
 ultimocomando: 'return' (listaexp)? | 'break';
