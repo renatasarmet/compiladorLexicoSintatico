@@ -29,19 +29,11 @@ PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
 */
 /*Operadores de acordo com a precedência*/
 /*
-OpLogico1: 'or';
-OpLogico2: 'and';
-OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
+
+
 OpConcat: '..'; // CONCATENAÇÃO
-OpArit1: '+' | '-';
-OpArit2: '*'| '/' | '%';
-OpLogico3: 'not' | '#' | '-' ;// '-' UNÁRIO
-OpArit3: '^'; //EXPONENCIAÇÃO
 
-OpAtrib: '='; //ATRIBUIÇÃO
 
-ParenE : '(';
-ParenD : ')';
 
 OpDelim: ParenE | ParenD | '(' | ')*' | '(' | ')?'; //DELIMITADORES
 OpOutros: ';' | ':' | ',' | '.' | '...';
@@ -49,6 +41,22 @@ OpOutros: ';' | ':' | ',' | '.' | '...';
 */
 
 /*NOMES*/
+
+//Operadores aritme
+OpArit1: '+' | '-' | '..';
+OpArit2: '*'| '/' | '%';
+OpArit3: '^'; //EXPONENCIAÇÃO
+
+
+OpAtrib: '='; //ATRIBUIÇÃO
+
+//Operadores lógicos
+OpLogico1: 'or';
+OpLogico2: 'and';
+OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
+
+OpUnaria: 'not' | '#' | '-' ;// '-' UNÁRIO
+
 
 fragment LetraMinuscula : ('a'..'z');
 fragment LetraMaiuscula : ('A'..'Z');
@@ -86,7 +94,8 @@ programa : trecho;
 
 trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
-comando : 'function' nomedafuncao corpodafuncao ;
+comando : 'function' nomedafuncao corpodafuncao |
+           'if'  exp 'then' trecho ('elseif' exp 'then' trecho)* ('else' trecho)? 'end';
 
 ultimocomando: 'return' (listaexp)? | 'break';
 
@@ -96,13 +105,20 @@ corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
 listaexp : (exp ',')* exp;
 
-exp : 'nil' | 'false' | 'true' | ConstanteNumerica | CadeiaCaracteres | '...';
+exp :  ConstanteNumerica | expprefixo | expprefixo OpRel exp | OpUnaria exp | expprefixo OpArit2 exp | expprefixo OpArit1 exp  ;
 
 listapar : listadenomes (',' '...')? | '...';
 
 nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
 listadenomes : nome (',' nome)*;
+
+expprefixo: var | '(' expprefixo ')' | chamadadefuncao;
+
+chamadadefuncao :  nome '(' listaexp ')' ;
+
+var : nome ;
+
 
 /*
 //definição de um programa
