@@ -100,12 +100,13 @@ WS : [ \t\r\n]+ -> skip;
     ANÁLISE SINTÁTICA
 */
 
-programa : trecho; // Regra inicial
+// Regra inicial
+programa : trecho;
 
-// Trecho de uma parte do programa, podendo ter um comando ou um ultimo comando
+// Trecho de uma parte do programa, podendo ter quantos comandos necessários e opcional um ultimo comando
 trecho : (comando (PontoVir)?)* (ultimocomando (PontoVir)?)?;
 
-// Regra com os possiveis comandos
+// Regra com os possiveis comandos, como laços de repetição, condicionais, entre outros
 comando : listavar OpAtrib listaexp |
           chamadadefuncao |
           Do trecho End |
@@ -120,20 +121,20 @@ comando : listavar OpAtrib listaexp |
 // Regra contendo o ultimo comando, que seria um return ou um break
 ultimocomando: Return (listaexp)? | Break;
 
-// Regra para definir um nome de função
+// Regra para definir um nome de função e salvar na tabela de simbolos
 nomedafuncao : nomeF {TabelaDeSimbolos.adicionarSimbolo($nomeF.text, Tipo.FUNCAO);};
 
 // Regra para definir o formato de um nome de função
 nomeF : Nome (PontoFinal Nome)? ;
 
-// Regra que define o corpo de uma função, contendo a lista de parametros e um trecho
+// Regra que define o corpo de uma função, contendo a lista de parametros opicionais e um trecho
 corpodafuncao : ParenE (listapar)? ParenD trecho End;
 
 //Regra que define uma lista de expressões separada por uma virgula
 listaexp : exp (Virgula exp)* ;
 
-
-// Regras que define uma expressão, no qual fora modificada por conter ambiguidade
+// Regras que definem uma expressão, no qual fora modificada por conter ambiguidade
+// Como existia a regra "exp opBinaria exp", foi necessário tratá-la e deixar com associatividade à direita, criando "exp2"
 exp : exp2 opBinaria exp | exp2;
 exp2 : False | CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
 
@@ -146,24 +147,22 @@ opUn : Menos ;
 // Regra que define uma lista de parametros
 listapar : listadenomes (Virgula Pontos3)? | Pontos3;
 
-// Regra que define um nome de variavel
+// Regra que define um nome de variavel e salva na tabela de simbolos
 nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
 // Regra que define um formato para uma lista de nomes
 listadenomes : nome (Virgula nome)*;
 
-
-// Regra que define um prefio de uma expressão, no qual fora modificada por conter ambiguidade
-expprefixo: nome | expprefixo1;
-expprefixo1 :  ParenE exp ParenD | chamadadefuncao;
+// Regra que define um prefixo de uma expressão
+expprefixo: nome | ParenE exp ParenD | chamadadefuncao;
 
 // Regra que define uma variavel
 var : nome ;
 
-//Regra que define uma chamada de função, contendo o nome e os seus parametros
+//Regra que define uma chamada de função
 chamadadefuncao :  nomedafuncao ParenE listaexp ParenD ;
 
-// Regra wu define uma lista de variaveis
+// Regra que define uma lista de variaveis
 listavar : var ( Virgula var) *;
 
 //Regras que definem os operadores aritmeticos
