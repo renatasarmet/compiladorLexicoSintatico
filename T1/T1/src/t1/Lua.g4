@@ -119,7 +119,8 @@ corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
 listaexp : exp (',' exp)* ;
 
-exp : CadeiaCaracteres | constanteNumerica  | expprefixo | expprefixo OpRel exp | opUn exp | expprefixo opArit2 exp | expprefixo opArit1 exp  ;
+exp : exp2 opBinaria exp | exp2;
+exp2 : CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
 
 constanteNumerica: ConstanteNumerica ;
 
@@ -134,7 +135,7 @@ listadenomes : nome (',' nome)*;
 expprefixo: var | expprefixo1;
 expprefixo1 :  '(' exp ')' | chamadadefuncao;
 
-var : nome | (expprefixo1|nome) ('.' var)?;
+var : (nome)? | (expprefixo1|nome) '.' var;
 
 chamadadefuncao :  nome '(' listaexp ')' ;
 
@@ -145,6 +146,8 @@ listavar : var ( ',' var) *;
 opArit1 : Menos | Mais | DoisPontos;
 opArit2: Multiplicar | Dividir | Modulo;
 opArit3: Potencia;
+
+opBinaria : opArit1 | opArit2 | OpRel ;
 
 /*
 //definição de um programa
