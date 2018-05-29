@@ -128,7 +128,7 @@ listadenomes : nome (',' nome)*;
 expprefixo: var | expprefixo1;
 expprefixo1 :  '(' exp ')' | chamadadefuncao;
 
-var : (nome)? ;
+var : nome ;
 
 chamadadefuncao :  nomedafuncao '(' listaexp ')' ;
 
