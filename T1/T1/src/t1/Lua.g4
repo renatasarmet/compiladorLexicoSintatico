@@ -100,10 +100,12 @@ WS : [ \t\r\n]+ -> skip;
     ANÁLISE SINTÁTICA
 */
 
-programa : trecho; // regra inicial
+programa : trecho; // Regra inicial
 
+// Trecho de uma parte do programa, podendo ter um comando ou um ultimo comando
 trecho : (comando (PontoVir)?)* (ultimocomando (PontoVir)?)?;
 
+// Regra com os possiveis comandos
 comando : listavar OpAtrib listaexp |
           chamadadefuncao |
           Do trecho End |
@@ -115,41 +117,58 @@ comando : listavar OpAtrib listaexp |
           Local listadenomes (OpAtrib listaexp)?
           ;
 
+// Regra contendo o ultimo comando, que seria um return ou um break
 ultimocomando: Return (listaexp)? | Break;
 
+// Regra para definir um nome de função
 nomedafuncao : nomeF {TabelaDeSimbolos.adicionarSimbolo($nomeF.text, Tipo.FUNCAO);};
 
+// Regra para definir o formato de um nome de função
 nomeF : Nome (PontoFinal Nome)? ;
 
+// Regra que define o corpo de uma função, contendo a lista de parametros e um trecho
 corpodafuncao : ParenE (listapar)? ParenD trecho End;
 
+//Regra que define uma lista de expressões separada por uma virgula
 listaexp : exp (Virgula exp)* ;
 
+
+// Regras que define uma expressão, no qual fora modificada por conter ambiguidade
 exp : exp2 opBinaria exp | exp2;
 exp2 : False | CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
 
+// Regra que define uma contante numérica
 constanteNumerica: ConstanteNumerica ;
 
+// Regra que define um operador unário
 opUn : Menos ;
 
+// Regra que define uma lista de parametros
 listapar : listadenomes (Virgula Pontos3)? | Pontos3;
 
+// Regra que define um nome de variavel
 nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
+// Regra que define um formato para uma lista de nomes
 listadenomes : nome (Virgula nome)*;
 
-expprefixo: var | expprefixo1;
+
+// Regra que define um prefio de uma expressão, no qual fora modificada por conter ambiguidade
+expprefixo: nome | expprefixo1;
 expprefixo1 :  ParenE exp ParenD | chamadadefuncao;
 
+// Regra que define uma variavel
 var : nome ;
 
+//Regra que define uma chamada de função, contendo o nome e os seus parametros
 chamadadefuncao :  nomedafuncao ParenE listaexp ParenD ;
 
-
+// Regra wu define uma lista de variaveis
 listavar : var ( Virgula var) *;
 
-//Operadores aritmeticos
+//Regras que definem os operadores aritmeticos
 opArit1 : Menos | Mais | DoisPontos;
 opArit2: Multiplicar | Dividir | Modulo;
 
+// Regra que define as operações binárias
 opBinaria : opArit1 | opArit2 | OpRel ;
