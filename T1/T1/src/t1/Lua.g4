@@ -104,7 +104,9 @@ comando : listavar '=' listaexp |
 
 ultimocomando: 'return' (listaexp)? | 'break';
 
-nomedafuncao : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.FUNCAO);};
+nomedafuncao : nomeF {TabelaDeSimbolos.adicionarSimbolo($nomeF.text, Tipo.FUNCAO);};
+
+nomeF : Nome ('.' Nome)? ;
 
 corpodafuncao : '(' (listapar)? ')' trecho 'end';
 
@@ -126,7 +128,7 @@ listadenomes : nome (',' nome)*;
 expprefixo: var | expprefixo1;
 expprefixo1 :  '(' exp ')' | chamadadefuncao;
 
-var : (nome)? | nome '.' expprefixo1;
+var : (nome)? ;
 
 chamadadefuncao :  nomedafuncao '(' listaexp ')' ;
 
