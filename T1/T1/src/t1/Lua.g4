@@ -8,7 +8,9 @@ grammar Lua;
 @members {
     public static String grupo= "<606723, 726556 , 726586 >";
 }
-
+/*
+    ANÁLISE LÉXICA
+*/
 
 /*PALAVRAS RESERVADAS*/
 
@@ -34,25 +36,18 @@ grammar Lua;
  Until : 'until' ;
  While : 'while' ;
 
-/*
-    SIMBOLOS RESERVADOS:
-*/
+/* SIMBOLOS RESERVADOS: */
 
 ParenE : '(' ;
 ParenD : ')' ;
 PontoVir : ';' ;
 PontoFinal : '.' ;
 Virgula : ',' ;
+Pontos3 : '...';
 
+OpAtrib: '='; //Atribuição
 
-OpAtrib: '='; //ATRIBUIÇÃO
-
-
-//Operadores lógicos
-OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
-
-
-//OpUnaria: '-' ; //| 'not' | '#' ;// '-' UNÁRIO
+OpRel: '<' | '>' | '<=' | '>=' | '~=' | '=='; //Operadores lógicos
 
 Menos : '-' ;
 Mais : '+' ;
@@ -62,12 +57,21 @@ Dividir : '/' ;
 Modulo : '%' ;
 Potencia : '^' ;
 
+/* LETRAS E NÚMEROS */
+
+// Fragments que auxiliam na construção das regras léxicas
 fragment LetraMinuscula : ('a'..'z');
 fragment LetraMaiuscula : ('A'..'Z');
 fragment Letra: LetraMinuscula | LetraMaiuscula;
 fragment Digito : ('0'..'9');
 
+/*
+    NOMES DE VARIAVEIS:
+    Qualquer combinação de letras, números e sublinhado que não comece com número
+*/
+
 Nome: (Letra|'_')(Letra|'_'|Digito)* ;
+
 
 /*
     CADEIA DE CARACTERES:
@@ -92,9 +96,11 @@ Comentario: '--' ~('\n')* '\n' -> skip;
 WS : [ \t\r\n]+ -> skip;
 
 
-// Análise sintática
+/*
+    ANÁLISE SINTÁTICA
+*/
 
-programa : trecho;
+programa : trecho; // regra inicial
 
 trecho : (comando (PontoVir)?)* (ultimocomando (PontoVir)?)?;
 
@@ -107,7 +113,7 @@ comando : listavar OpAtrib listaexp |
           For nome OpAtrib exp Virgula exp (Virgula exp)* Do trecho End |
           For listadenomes In listaexp Do trecho End|
           Local listadenomes (OpAtrib listaexp)?
-           ;
+          ;
 
 ultimocomando: Return (listaexp)? | Break;
 
@@ -126,7 +132,7 @@ constanteNumerica: ConstanteNumerica ;
 
 opUn : Menos ;
 
-listapar : listadenomes (Virgula '...')? | '...';
+listapar : listadenomes (Virgula Pontos3)? | Pontos3;
 
 nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
@@ -145,6 +151,5 @@ listavar : var ( Virgula var) *;
 //Operadores aritmeticos
 opArit1 : Menos | Mais | DoisPontos;
 opArit2: Multiplicar | Dividir | Modulo;
-opArit3: Potencia;
 
 opBinaria : opArit1 | opArit2 | OpRel ;
