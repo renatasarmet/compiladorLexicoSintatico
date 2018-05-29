@@ -38,18 +38,14 @@ grammar Lua;
     SIMBOLOS RESERVADOS:
 */
 
-/*
-OpConcat: '..'; // CONCATENAÇÃO
-OpDelim: ParenE | ParenD | '(' | ')*' | '(' | ')?'; //DELIMITADORES
-OpOutros: ';' | ':' | ',' | '.' | '...';
-*/
-
-/*NOMES*/
-
+ParenE : '(' ;
+ParenD : ')' ;
+PontoVir : ';' ;
+PontoFinal : '.' ;
+Virgula : ',' ;
 
 
 OpAtrib: '='; //ATRIBUIÇÃO
-
 
 
 //Operadores lógicos
@@ -86,7 +82,7 @@ CadeiaCaracteres: ('\'' | '"')(~('\'' | '"'))*('\'' | '"');
     Apenas decimais, sem sinal, com dígitos antes e depois do ponto decimal opcionais
 */
 
-ConstanteNumerica: Digito+ ('.' Digito+)?;
+ConstanteNumerica: Digito+ (PontoFinal Digito+)?;
 
 
 //Ignora comentarios, comentarios na mesma linha
@@ -100,28 +96,28 @@ WS : [ \t\r\n]+ -> skip;
 
 programa : trecho;
 
-trecho : (comando (';')?)* (ultimocomando (';')?)?;
+trecho : (comando (PontoVir)?)* (ultimocomando (PontoVir)?)?;
 
-comando : listavar '=' listaexp |
+comando : listavar OpAtrib listaexp |
           chamadadefuncao |
           Do trecho End |
           Function nomedafuncao corpodafuncao |
           If  exp Then trecho (Elseif exp Then trecho)* (Else trecho)? End |
           Repeat trecho Until exp |
-          For nome '=' exp ',' exp (',' exp)* Do trecho End |
+          For nome OpAtrib exp Virgula exp (Virgula exp)* Do trecho End |
           For listadenomes In listaexp Do trecho End|
-          Local listadenomes ('=' listaexp)?
+          Local listadenomes (OpAtrib listaexp)?
            ;
 
 ultimocomando: Return (listaexp)? | Break;
 
 nomedafuncao : nomeF {TabelaDeSimbolos.adicionarSimbolo($nomeF.text, Tipo.FUNCAO);};
 
-nomeF : Nome ('.' Nome)? ;
+nomeF : Nome (PontoFinal Nome)? ;
 
-corpodafuncao : '(' (listapar)? ')' trecho 'end';
+corpodafuncao : ParenE (listapar)? ParenD trecho End;
 
-listaexp : exp (',' exp)* ;
+listaexp : exp (Virgula exp)* ;
 
 exp : exp2 opBinaria exp | exp2;
 exp2 : False | CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
@@ -130,21 +126,21 @@ constanteNumerica: ConstanteNumerica ;
 
 opUn : Menos ;
 
-listapar : listadenomes (',' '...')? | '...';
+listapar : listadenomes (Virgula '...')? | '...';
 
 nome : Nome {TabelaDeSimbolos.adicionarSimbolo($Nome.text, Tipo.VARIAVEL);};
 
-listadenomes : nome (',' nome)*;
+listadenomes : nome (Virgula nome)*;
 
 expprefixo: var | expprefixo1;
-expprefixo1 :  '(' exp ')' | chamadadefuncao;
+expprefixo1 :  ParenE exp ParenD | chamadadefuncao;
 
 var : nome ;
 
-chamadadefuncao :  nomedafuncao '(' listaexp ')' ;
+chamadadefuncao :  nomedafuncao ParenE listaexp ParenD ;
 
 
-listavar : var ( ',' var) *;
+listavar : var ( Virgula var) *;
 
 //Operadores aritmeticos
 opArit1 : Menos | Mais | DoisPontos;
