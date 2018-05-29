@@ -11,20 +11,33 @@ grammar Lua;
 
 
 /*PALAVRAS RESERVADAS*/
-/*
-PalavraReservada:'and' | 'break' | 'do' | 'else' | 'elseif' | 'end' | 'false' |
-                 'for' | 'function' | 'if' | 'in' | 'local' | 'nil' | 'not' | 'or' |
-                 'repeat' | 'return' | 'then' | 'true' | 'until' | 'while';
-*/
+
+ And : 'and' ;
+ Or : 'or' ;
+ Break : 'break' ;
+ Do : 'do' ;
+ Else : 'else' ;
+ Elseif : 'elseif' ;
+ End : 'end' ;
+ False : 'false' ;
+ For : 'for' ;
+ Function : 'function' ;
+ If : 'if' ;
+ In : 'in' ;
+ Local : 'local' ;
+ Nil : 'nil' ;
+ Not : 'not' ;
+ Repeat : 'repeat' ;
+ Return : 'return' ;
+ Then : 'then' ;
+ True : 'true' ;
+ Until : 'until' ;
+ While : 'while' ;
 
 /*
     SIMBOLOS RESERVADOS:
-    Precedência:
-    Parênteses muda a precedência de uma expressão.
-    Os operadores ('..') e ('^') são associativos à direita.
-    Todos os demais operadores binários são associativos à esquerda.
 */
-/*Operadores de acordo com a precedência*/
+
 /*
 OpConcat: '..'; // CONCATENAÇÃO
 OpDelim: ParenE | ParenD | '(' | ')*' | '(' | ')?'; //DELIMITADORES
@@ -40,8 +53,6 @@ OpAtrib: '='; //ATRIBUIÇÃO
 
 
 //Operadores lógicos
-OpLogico1: 'or';
-OpLogico2: 'and';
 OpRel: '<' | '>' | '<=' | '>=' | '~=' | '==';
 
 
@@ -93,16 +104,16 @@ trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
 comando : listavar '=' listaexp |
           chamadadefuncao |
-          'do' trecho 'end' |
-          'function' nomedafuncao corpodafuncao |
-          'if'  exp 'then' trecho ('elseif' exp 'then' trecho)* ('else' trecho)? 'end' |
-          'repeat' trecho 'until' exp |
-          'for' nome '=' exp ',' exp (',' exp)* 'do' trecho 'end' |
-          'for' listadenomes 'in' listaexp 'do' trecho 'end' |
-          'local' listadenomes ('=' listaexp)?
+          Do trecho End |
+          Function nomedafuncao corpodafuncao |
+          If  exp Then trecho (Elseif exp Then trecho)* (Else trecho)? End |
+          Repeat trecho Until exp |
+          For nome '=' exp ',' exp (',' exp)* Do trecho End |
+          For listadenomes In listaexp Do trecho End|
+          Local listadenomes ('=' listaexp)?
            ;
 
-ultimocomando: 'return' (listaexp)? | 'break';
+ultimocomando: Return (listaexp)? | Break;
 
 nomedafuncao : nomeF {TabelaDeSimbolos.adicionarSimbolo($nomeF.text, Tipo.FUNCAO);};
 
@@ -113,7 +124,7 @@ corpodafuncao : '(' (listapar)? ')' trecho 'end';
 listaexp : exp (',' exp)* ;
 
 exp : exp2 opBinaria exp | exp2;
-exp2 : 'false' | CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
+exp2 : False | CadeiaCaracteres | constanteNumerica  | expprefixo | opUn exp2 ;
 
 constanteNumerica: ConstanteNumerica ;
 
